@@ -2,7 +2,7 @@ const {URI} = require('./credentials.js');
 const mongoose = require('mongoose');
 const express = require('express');
 
-const {} = require('./mongoose/mongooseCRUD')
+const {createNewUser, createNewList, createNewItem, createNewComment} = require('./mongoose/mongooseCRUD')
 
 const app = express()
 const port = 3000
@@ -33,3 +33,6 @@ db.once('open', function() {
 let currentUser = '';
 let currentList = '';
 let currentItem = '';
+
+// CRUD TEST
+// createNewUser('Paul','username','password','email','org','type',5,'yearly',true);

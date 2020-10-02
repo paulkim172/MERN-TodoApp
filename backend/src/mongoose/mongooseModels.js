@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 //main Schemas
 
 const userSchema = new mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
+
     name: String,
     username: String,
     password: String,
@@ -19,11 +19,12 @@ const userSchema = new mongoose.Schema({
 
     subscription: Boolean,
 
-    lists: [{type: mongoose.Schema.Types.ObjectId, ref: 'todolist'}]
+    lists: [{type: mongoose.Schema.Types.ObjectId, ref: 'todolist'}],
+    comments: [{type: mongoose.Schema.Types.ObjectId, ref: 'itemcomments'}]
 })
 
 const listSchema = new mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
+
     user_id: {type: mongoose.Schema.Types.ObjectId, ref: 'user'},
     name: String,
     published_date: Date,
@@ -33,7 +34,7 @@ const listSchema = new mongoose.Schema({
 })
 
 const itemSchema = new mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
+
     list_id: {type: mongoose.Schema.Types.ObjectId, ref: 'todolist'},
     published_date: Date,
     title: String,
@@ -46,6 +47,7 @@ const itemSchema = new mongoose.Schema({
 })
 
 const commentSchema = new mongoose.Schema({
+
     published_date: Date,
     description: String,
     item_id: {type: mongoose.Schema.Types.ObjectId, ref: 'todoitem'},
