@@ -4,6 +4,7 @@ const express = require('express');
 
 const {createNewUser, createNewList, createNewItem, createNewComment} = require('./mongoose/mongooseCRUD')
 
+
 const app = express()
 const port = 3000
 
@@ -30,9 +31,22 @@ db.once('open', function() {
 
 //current user, list, item, etc.
 
-let currentUser = '';
-let currentList = '';
-let currentItem = '';
+let currentUser = {};
+let currentList = {};
+let currentItem = {};
 
+// assign current user, list, item, etc.
+
+const assignCurrentUser = () => {
+
+}
+
+const assignCurrentList = () => {
+
+}
+
+const assignCurrentItem = () => {
+  
+}
 // CRUD TEST
 // createNewUser('Paul','username','password','email','org','type',5,'yearly',true);

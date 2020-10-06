@@ -181,3 +181,20 @@ exports.createNewUser = createNewUser;
 exports.createNewList = createNewList;
 exports.createNewItem = createNewItem;
 exports.createNewComment = createNewComment;
+
+exports.readCurrentUser = readCurrentUser;
+exports.readCurrentList = readCurrentList;
+exports.readCurrentItem = readCurrentItem;
+exports.readCurrentComment =readCurrentComment;
+
+exports.updateCurrentUser = updateCurrentUser;
+exports.updateCurrentList = updateCurrentList;
+exports.updateCurrentItem = updateCurrentItem;
+exports.updateCurrentComment = updateCurrentComment;
+
+exports.deleteCurrentUser = deleteCurrentUser;
+exports.deleteCurrentList = deleteCurrentList;
+exports.deleteCurrentItem = deleteCurrentItem;
+exports.deleteCurrentComment = deleteCurrentComment;
+
+exports.User = User;
