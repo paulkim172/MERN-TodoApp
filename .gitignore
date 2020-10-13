@@ -1,2 +1,2 @@
-backend/src/credentials.js
+backend/src/secrets/
 backend/node_modules/

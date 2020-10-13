@@ -1,24 +1,31 @@
-const {URI} = require('./credentials.js');
+const {URI} = require('./secrets/credentials.js');
 const mongoose = require('mongoose');
 const express = require('express');
 
-const {createNewUser, createNewList, createNewItem, createNewComment} = require('./mongoose/mongooseCRUD')
-
+const {routes} = require('./routes/express')
+const {auth} = require('./routes/login/session')
 
 const app = express()
 const port = 3000
 
 mongoose.connect(URI, {useNewUrlParser: true, useUnifiedTopology: true});
 
+
+
 //express 
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
+  if(req.session){
+    
+  }
 })
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
+
+routes();
 
 
 //mongoose
@@ -29,24 +36,6 @@ db.once('open', function() {
     console.log('Connected to MongoDB!')
 });
 
-//current user, list, item, etc.
 
-let currentUser = {};
-let currentList = {};
-let currentItem = {};
-
-// assign current user, list, item, etc.
-
-const assignCurrentUser = () => {
-
-}
-
-const assignCurrentList = () => {
-
-}
-
-const assignCurrentItem = () => {
-  
-}
 // CRUD TEST
 // createNewUser('Paul','username','password','email','org','type',5,'yearly',true);

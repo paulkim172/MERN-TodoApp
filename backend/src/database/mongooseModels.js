@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 //main Schemas
 
@@ -9,7 +10,7 @@ const userSchema = new mongoose.Schema({
     password: String,
     email: String,
 
-    org: String,
+    groups: [{type: mongoose.Schema.Types.ObjectId, ref: 'groups', role: String}],
     type: String,
 
     level: Number,
@@ -61,13 +62,32 @@ const itemCheckListSchema = new mongoose.Schema({
 
 })
 
+//salt and hash password of User
+
+userSchema.pre('save', function(next) {
+    let user = this;
+
+    if(!user.isModified('password')) return next();
+
+    if(user.password) {
+        bcrypt.genSalt(10, function(err, salt) {
+            if(err) return next(err);
+            bcrypt.hash(user.password, salt, null, function(err,hash) {
+                if(err) return next(err);
+                user.password = hash;
+                next(err);
+            })
+        })
+    }
+})
+
 //Main Models
 const userModel = mongoose.model('user', userSchema,'user');
 const listModel = mongoose.model('list',listSchema,'todolist');
 const itemModel = mongoose.model('item',itemSchema,'todoitem');
 const commentModel = mongoose.model('comment',commentSchema,'todocomment');
 
-exports.userModel = userModel;
-exports.listModel = listModel;
-exports.itemModel = itemModel;
-exports.commentModel = commentModel;
+exports.User = userModel;
+exports.List = listModel;
+exports.Item = itemModel;
+exports.Comment = commentModel;

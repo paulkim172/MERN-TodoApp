@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const {userModel, listModel, itemModel, commentModel} = require('./mongooseModels');
-
+const {User, List, Item, Comment} = require('./mongooseModels');
+const { saltAndHashNewPassword, checkHashedPassword } = require('../routes/login/bcrypt.js')
 
 
 
@@ -8,30 +8,33 @@ const {userModel, listModel, itemModel, commentModel} = require('./mongooseModel
 
 //Create
 
-const createNewUser = async (a,b,c,d,e,f,g,h,i) => {
-    const User = await userModel.create({
+const createNewUser = async (a = null,b,c,d) => {
+    const user = new User({
         name: a,
         username: b,
         password: c,
         email: d,
 
-        org: e,
-        type: f,
+        groups: [],
 
-        level: g,
+        level: 0,
         renew: true,
-        renew_type: h,
-        renew_date: (h == 'yearly'? new Date(new Date().setFullYear(new Date().getFullYear() + 1)): new Date(new Date().setMonth(new Date().getMonth() + 1))),
+        renew_type: d,
+        renew_date: (d == 'yearly'? new Date(new Date().setFullYear(new Date().getFullYear() + 1)): new Date(new Date().setMonth(new Date().getMonth() + 1))),
 
-        subscription: i,
+        subscription: false,
         lists: [],
         comments: []
 
     })
+    //Salt and Hash password using BCrypt
+    saltAndHashNewPassword(user);
+    user.save();
+    
 }
 
 const createNewList = async (a,b,c) => {
-    const List = await listModel.create({
+    const list = await List.create({
         name: a,
         published_date: new Date(),
         show_in_main: b,
@@ -48,7 +51,7 @@ const createNewList = async (a,b,c) => {
 }
 
 const createNewItem = async (a,b,c,d,e,f) => {
-    const Item = await itemModel.create({
+    const item = await Item.create({
         published_date: new Date(),
         title: a,
         text: b,
@@ -68,7 +71,7 @@ const createNewItem = async (a,b,c,d,e,f) => {
 }
 
 const createNewComment = async (a,b) => {
-    const Comment = await commentModel.create({
+    const comment = await Comment.create({
         published_date: new Date(),
         description: a
     })
