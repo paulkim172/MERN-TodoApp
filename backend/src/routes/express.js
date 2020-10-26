@@ -1,5 +1,4 @@
 const express = require('express');
-const passport = require('passport');
 const {session} = require('./login/session');
 const {login} = require('./login/userLogin')
 
@@ -10,6 +9,12 @@ const app = express()
 
 const routes = () => {
     
+    app.get('/', (req, res) => {
+        res.send('Hello World!')
+        if(req.session){
+          
+        }
+      })
     //Session
 
     session();
