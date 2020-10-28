@@ -3,13 +3,11 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
-const app = express();
-
 const secret = require('../../secrets/session-secrets');
 
 //Authentication and Authorization Middleware
   
-const auth = function(req, res, next) {
+exports.auth = (req, res, next) => {
   if (req.session && req.session.user){
     return next();
   } else {
@@ -19,7 +17,7 @@ const auth = function(req, res, next) {
 
 //Session
 
-const newSession = (x) => {
+exports.session = (app) => {
     if(app.get('env') === 'production') {
         app.set('trust proxy', 1);
       }
@@ -28,7 +26,7 @@ const newSession = (x) => {
         secret: secret,
         resave: true,
         saveUninitialized: true,
-        user: x,
+        user: 'x',
         store: new MongoStore({
             mongooseConnection: mongoose.connection,
             dbName: 'sessions',
@@ -37,10 +35,9 @@ const newSession = (x) => {
 
         cookie: {
           secure: true,
-          expires: true
+          expires: true,
+          maxAge: 1000 * 60 * 60 * 12 * 14
         }
       }))
 }
 
-exports.session = newSession;
-exports.auth = auth;

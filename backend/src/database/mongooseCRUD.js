@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const {User, List, Item, Comment} = require('./mongooseModels');
-const { saltAndHashNewPassword, checkHashedPassword } = require('../routes/login/bcrypt.js')
+const { saltAndHashNewPassword, checkHashedPassword } = require('../services/bcrypt/bcrypt.js')
 
 
 
@@ -8,8 +8,8 @@ const { saltAndHashNewPassword, checkHashedPassword } = require('../routes/login
 
 //Create
 
-const createNewUser = async (a = null,b,c,d) => {
-    const user = new User({
+const createNewUser = async (a = null,b,c,d,e = null) => {
+    let user = new User({
         name: a,
         username: b,
         password: c,
@@ -19,8 +19,8 @@ const createNewUser = async (a = null,b,c,d) => {
 
         level: 0,
         renew: true,
-        renew_type: d,
-        renew_date: (d == 'yearly'? new Date(new Date().setFullYear(new Date().getFullYear() + 1)): new Date(new Date().setMonth(new Date().getMonth() + 1))),
+        renew_type: e,
+        renew_date: (e == 'yearly'? new Date(new Date().setFullYear(new Date().getFullYear() + 1)): new Date(new Date().setMonth(new Date().getMonth() + 1))),
 
         subscription: false,
         lists: [],
@@ -28,9 +28,17 @@ const createNewUser = async (a = null,b,c,d) => {
 
     })
     //Salt and Hash password using BCrypt
-    saltAndHashNewPassword(user);
-    user.save();
-    
+
+    let promise = saltAndHashNewPassword(user);
+    let saltAndHashedUser = await promise;
+
+    console.log(saltAndHashedUser.password + ' from mongooseCRUD');
+    saltAndHashedUser.save(function(err){
+        if(err){
+            console.log(err);
+            return;
+        }})
+            
 }
 
 const createNewList = async (a,b,c) => {

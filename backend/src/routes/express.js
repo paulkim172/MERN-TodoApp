@@ -1,13 +1,9 @@
-const express = require('express');
 const {session} = require('./login/session');
-const {login} = require('./login/userLogin')
-
-const app = express()
-
+const {login} = require('./login/login')
 
 /* ROUTES */
 
-const routes = () => {
+exports.expressRoutes = (app) => {
     
     app.get('/', (req, res) => {
         res.send('Hello World!')
@@ -17,11 +13,10 @@ const routes = () => {
       })
     //Session
 
-    session();
+    session(app);
     
     //Login Routes
     
-    login();
+    login(app);
     
 }
-exports.routes = routes;

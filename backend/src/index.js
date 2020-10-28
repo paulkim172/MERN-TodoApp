@@ -1,35 +1,41 @@
 const {URI} = require('./secrets/credentials.js');
 const mongoose = require('mongoose');
 const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require("cors");
 
-const {routes} = require('./routes/express')
+const {expressRoutes} = require('./routes/express')
+const {createNewUser} = require('./database/mongooseCRUD')
 
 const app = express()
 const port = 3000
 
+
+//mongoose
+
 mongoose.connect(URI, {useNewUrlParser: true, useUnifiedTopology: true});
 
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+      console.log('Connected to MongoDB!')
+  });
 
 
 //express 
 
-
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
 
-routes();
-
-
-//mongoose
-
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-    console.log('Connected to MongoDB!')
-});
+expressRoutes(app);
 
 
 // CRUD TEST
-// createNewUser('Paul','username','password','email','org','type',5,'yearly',true);
+// createNewUser('Name','username','password','email');

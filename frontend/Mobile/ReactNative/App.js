@@ -26,7 +26,7 @@ import {
 
 import  Login  from './login.js'
 
-let domain = 'localhost: 5000'
+let domain = 'localhost:3000'
 
 class App extends Component {
   constructor(props){
@@ -40,13 +40,15 @@ class App extends Component {
     console.log(data['password']);
     await fetch(url, {
       method: 'POST',
+      mode: 'cors',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
+      body: JSON.stringify(data)
     })
-      .then(res => res.json())
-      .then(data => console.log(data));
+      .then(() => console.log("promise accepted"))
+      .catch(()=> console.log("promise rejected"));
   }
   
   render(){
