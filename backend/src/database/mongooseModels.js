@@ -22,7 +22,8 @@ const userSchema = new mongoose.Schema({
 
     lists: [{type: mongoose.Schema.Types.ObjectId, ref: 'todolist'}],
     comments: [{type: mongoose.Schema.Types.ObjectId, ref: 'itemcomments'}]
-})
+    }
+)
 
 const listSchema = new mongoose.Schema({
 
@@ -62,30 +63,30 @@ const itemCheckListSchema = new mongoose.Schema({
 
 })
 
-//salt and hash password of User
+// //salt and hash password of User
 
-userSchema.pre('save', function(next) {
-    let user = this;
+// userSchema.pre('save', function(next) {
+//     let user = this;
 
-    if(!user.isModified('password')) return next();
+//     if(!user.isModified('password')) return next();
 
-    if(user.password) {
-        bcrypt.genSalt(10, function(err, salt) {
-            if(err) return next(err);
-            bcrypt.hash(user.password, salt, null, function(err,hash) {
-                if(err) return next(err);
-                user.password = hash;
-                next(err);
-            })
-        })
-    }
-})
+//     if(user.password) {
+//         bcrypt.genSalt(10, function(err, salt) {
+//             if(err) return next(err);
+//             bcrypt.hash(user.password, salt, null, function(err,hash) {
+//                 if(err) return next(err);
+//                 user.password = hash;
+//                 next(err);
+//             })
+//         })
+//     }
+// })
 
 //Main Models
-const userModel = mongoose.model('user', userSchema,'user');
-const listModel = mongoose.model('list',listSchema,'todolist');
-const itemModel = mongoose.model('item',itemSchema,'todoitem');
-const commentModel = mongoose.model('comment',commentSchema,'todocomment');
+const userModel = mongoose.model('user', userSchema);
+const listModel = mongoose.model('list',listSchema);
+const itemModel = mongoose.model('item',itemSchema);
+const commentModel = mongoose.model('comment',commentSchema);
 
 exports.User = userModel;
 exports.List = listModel;

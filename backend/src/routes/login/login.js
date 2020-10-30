@@ -4,22 +4,19 @@ const {addPassportLocal} = require('../../services/passport/passport-local');
 const {createNewUser} = require('../../database/mongooseCRUD');
 const {auth} = require('./session');
 
+const {User} = require('../../database/mongooseModels')
+
 exports.login = (app) => {
 
   addPassportLocal();
   
   //Register
 
-  app.post('/register', function (req,res) {
-      createNewUser(
-        null,
-        req.body.username,
-        req.body.password,
-        req.body.email,
-        req.body.subscribe
-        );
-      res.redirect('/login');
-    })
+  app.post('/register', (req,res) => {
+    createNewUser(req,res);
+    res.send('created User');
+    }
+  )
   
   //Login
   
@@ -50,6 +47,14 @@ exports.login = (app) => {
   app.post('/test', function (req,res) {
     console.log('test complete!');
   })
+
+    //TEST
+// app.post('/hello', function (req,res) {
+//   User.create({}, function(err,username){
+//     if (err) return handleError(err);
+//   })
+//   res.send('done!')
+// })
+  
 }
 
-  

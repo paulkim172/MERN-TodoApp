@@ -8,37 +8,32 @@ const { saltAndHashNewPassword, checkHashedPassword } = require('../services/bcr
 
 //Create
 
-const createNewUser = async (a = null,b,c,d,e = null) => {
+const createNewUser = async (req,res) => {
     let user = new User({
-        name: a,
-        username: b,
-        password: c,
-        email: d,
+        name: null,
+        username: req.body.username,          
+        password: req.body.password,
+        email: req.body.email,
 
         groups: [],
+        lists: [],
+        comments: [],
 
         level: 0,
-        renew: true,
-        renew_type: e,
-        renew_date: (e == 'yearly'? new Date(new Date().setFullYear(new Date().getFullYear() + 1)): new Date(new Date().setMonth(new Date().getMonth() + 1))),
 
-        subscription: false,
-        lists: [],
-        comments: []
-
+        subscription: false
     })
     //Salt and Hash password using BCrypt
 
-    let promise = saltAndHashNewPassword(user);
-    let saltAndHashedUser = await promise;
+    await saltAndHashNewPassword(user);
+    // console.log(user.password + ' from mongooseCRUD');
 
-    console.log(saltAndHashedUser.password + ' from mongooseCRUD');
-    saltAndHashedUser.save(function(err){
+    await user.save(
+        function(err){
         if(err){
-            console.log(err);
-            return;
-        }})
-            
+            handleError(err);
+        }}
+    )
 }
 
 const createNewList = async (a,b,c) => {

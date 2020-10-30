@@ -6,7 +6,7 @@ const saltAndHashNewPassword = (user) => {
       bcrypt.hash(user.password, salt, (err, hash) => {
         if(err) throw err;
         user.password = hash;
-        console.log(user.password + ' from saltAndHash');
+        // console.log(user.password + ' from saltAndHash');
         resolve(user);
       })
     })

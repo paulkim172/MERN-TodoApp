@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require("cors");
 
 const {expressRoutes} = require('./routes/express')
-const {createNewUser} = require('./database/mongooseCRUD')
+// const {createNewUser} = require('./database/mongooseCRUD')
 
 const app = express()
 const port = 3000
