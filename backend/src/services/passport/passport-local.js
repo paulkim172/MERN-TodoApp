@@ -2,7 +2,8 @@ const passport = require('passport')
     , LocalStrategy = require('passport-local').Strategy;
 const {checkHashedPassword} = require('../bcrypt/bcrypt');
 const {User} = require('../../database/mongooseCRUD');
-const {newSession} = require('../../routes/login/session')
+const {createJsonWebToken} = require('../jsonwebtoken/jwt')
+
 
 exports.addPassportLocal = () => {
     passport.use('local', new LocalStrategy(
@@ -21,8 +22,7 @@ exports.addPassportLocal = () => {
                     return done(null, false);
                 }
 
-                newSession(User.findById);
-                
+                console.log('correct sign in!');
                 return done(null, user);
             })
         }

@@ -4,16 +4,14 @@ const {login} = require('./login/login')
 /* ROUTES */
 
 exports.expressRoutes = (app) => {
+  console.log('received expressRoutes')
     
     app.get('/', (req, res) => {
         res.send('Hello World!')
-        if(req.session){
-          
-        }
       })
     //Session
 
-    session(app);
+    // session(app);
     
     //Login Routes
     

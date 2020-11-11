@@ -43,7 +43,8 @@ class App extends Component {
       mode: 'cors',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'authorization': (token ? `bearer ${token}`:'')
       },
       body: JSON.stringify(data)
     })

@@ -21,7 +21,8 @@ const userSchema = new mongoose.Schema({
     subscription: Boolean,
 
     lists: [{type: mongoose.Schema.Types.ObjectId, ref: 'todolist'}],
-    comments: [{type: mongoose.Schema.Types.ObjectId, ref: 'itemcomments'}]
+    comments: [{type: mongoose.Schema.Types.ObjectId, ref: 'itemcomments'}],
+    refreshTokens: [{type: mongoose.Schema.Types.String}]
     }
 )
 

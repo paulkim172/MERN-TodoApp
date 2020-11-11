@@ -6,9 +6,11 @@ const { saltAndHashNewPassword, checkHashedPassword } = require('../services/bcr
 
 /* CRUD FUNCTIONALITY */
 
+
 //Create
 
 const createNewUser = async (req,res) => {
+
     let user = new User({
         name: null,
         username: req.body.username,          
@@ -18,6 +20,8 @@ const createNewUser = async (req,res) => {
         groups: [],
         lists: [],
         comments: [],
+
+        refreshTokens: [],
 
         level: 0,
 
