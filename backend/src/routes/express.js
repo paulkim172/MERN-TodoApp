@@ -1,4 +1,3 @@
-const {session} = require('./login/session');
 const {login} = require('./login/login')
 
 /* ROUTES */

@@ -1,15 +1,17 @@
-const { refreshSecret, secret } = require('../../secrets/session-secrets');
 
-const JwtStrategy = require('passport-jwt').Strategy,
+const { refreshSecret, secret } = require('../../secrets/token-secrets');
+
+const passport = require('passport'),
+    JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 
 exports.addPassportAccessJWT = () => {
     options = {
         jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secret : secret,
+        secretOrKey : secret,
     }
 
-    passport.use('access-jwt',new JwtStrategy(options, function(jwt_payload, done) {
+    passport.use(new JwtStrategy(options, function(jwt_payload, done) {
         User.findOne({id: jwt_payload.id}, function(err, user) {
             if (err) {
                 return done(err, false);
@@ -27,10 +29,10 @@ exports.addPassportAccessJWT = () => {
 exports.addPassportRefreshJWT = () => {
     options = {
         jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secret : refreshSecret,
+        secretOrKey : refreshSecret,
     }
 
-    passport.use('refresh-jwt',new JwtStrategy(options, function(jwt_payload, done) {
+    passport.use(new JwtStrategy(options, function(jwt_payload, done) {
         User.findOne({id: jwt_payload.id}, function(err, user) {
             if (err) {
                 return done(err, false);

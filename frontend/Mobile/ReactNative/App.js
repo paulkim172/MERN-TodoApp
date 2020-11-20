@@ -1,61 +1,44 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
+import 'react-native-gesture-handler';
 import React, {Component} from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
-
+import {SafeAreaView, ScrollView, View, Text, StatusBar} from 'react-native';
 import {
   Header,
   LearnMoreLinks,
-  Colors,
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 
-import  Login  from './login.js'
+import {styles} from './assets/css/styles';
+import {isSignedIn} from './functions/authentication';
 
-let domain = 'localhost:3000'
+import Login from './components/login.js';
+import Dashboard from './components/dashboard.js';
+import Register from './components/register.js';
+
+const Stack = createStackNavigator();
 
 class App extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-
-    this.loginSubmit = this.loginSubmit.bind(this);
   }
 
-  async loginSubmit(data, url = `${domain}/login`){
-    console.log(data['username']);
-    console.log(data['password']);
-    await fetch(url, {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'authorization': (token ? `bearer ${token}`:'')
-      },
-      body: JSON.stringify(data)
-    })
-      .then(() => console.log("promise accepted"))
-      .catch(()=> console.log("promise rejected"));
-  }
-  
-  render(){
+  render() {
     return (
-      <>
-        <Login loginSubmit = {this.loginSubmit}/>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {isSignedIn ? (
+            <>
+              <Stack.Screen name="Dashboard" component={Dashboard} />
+            </>
+          ) : (
+            <>
+              <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen name="Register" component={Register} />
+            </>
+          )}
+        </Stack.Navigator>
         <StatusBar barStyle="dark-content" />
         <SafeAreaView>
           <ScrollView
@@ -71,8 +54,8 @@ class App extends Component {
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}>Step One</Text>
                 <Text style={styles.sectionDescription}>
-                  Edit <Text style={styles.highlight}>App.js</Text> to change this
-                  screen and then come back to see your edits.
+                  Edit <Text style={styles.highlight}>App.js</Text> to change
+                  this screen and then come back to see your edits.
                 </Text>
               </View>
               <View style={styles.sectionContainer}>
@@ -97,49 +80,9 @@ class App extends Component {
             </View>
           </ScrollView>
         </SafeAreaView>
-      </>
+      </NavigationContainer>
     );
-  };
   }
-  
-
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
+}
 
 export default App;

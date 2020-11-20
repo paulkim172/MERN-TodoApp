@@ -1,15 +1,33 @@
 const passport = require('passport');
 const {addPassportLocal} = require('../../services/passport/passport-local');
-const {addPassportJWT, createRefreshJWT} = require('../../services/jsonwebtoken/jwt');
+const {addPassportAccessJWT, addPassportRefreshJWT} = require('../../services/passport/passport-jwt')
+const {createAccessJWT,createRefreshJWT} = require('../../services/jsonwebtoken/jwt');
 const {createNewUser} = require('../../database/mongooseCRUD');
 
 const { User } = require('../../database/mongooseModels');
-const {createAccessJWT,createRefreshJWT} = require('../../services/jsonwebtoken/jwt');
+
 
 exports.login = (app) => {
 
+
   addPassportLocal();
+  addPassportAccessJWT();
   addPassportRefreshJWT();
+
+  //Access
+
+  app.post('/access',
+  passport.authenticate('access-jwt', {failureRedirect: '/login', session: false}),
+  function (req,res){
+    User.findOne({refreshTokens:req.header.authorization}, (err,user) => {
+      if(err) {
+        console.log(err);
+      } else{
+        res.json({accessToken: createAccessJWT(user)});
+      }
+
+    return
+  })})
 
   //Refresh
 
@@ -29,7 +47,6 @@ exports.login = (app) => {
   //Register
 
   app.post('/register', 
-  passport.authenticate('refresh-jwt', {successRedirect: '/', session: false}),
   async (req,res) => {
       if(!(await User.exists({username: req.body.username}))){
         createNewUser(req,res);
@@ -51,7 +68,7 @@ exports.login = (app) => {
         if(err) {
           console.log(err);
         } else{
-          res.json({refreshToken: createRefreshJWT(user),});
+          res.json({refreshToken: createRefreshJWT(user)});
           return;
         }
       })
