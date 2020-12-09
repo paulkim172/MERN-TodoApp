@@ -1,37 +1,45 @@
-import {_storeRefreshJWT} from '../asyncStorage';
+import {
+  _storeRefreshJWT,
+  _retrieveAccessJWT,
+  _retrieveRefreshJWT,
+} from '../device/asyncStorage';
+import {getUniqueId} from '../device/deviceInfo';
 
 const domain = 'http://192.168.0.10:3000';
+const deviceId = getUniqueId();
 
 const loginSubmit = async (data, url = `${domain}/login`) => {
-  console.log(data.username);
+  console.log(data['username/email']);
   console.log(data.password);
+  console.log(deviceId);
   await fetch(url, {
     method: 'POST',
     mode: 'cors',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      deviceId: deviceId,
     },
     body: JSON.stringify(data),
   })
-    .then(() => console.log('promise accepted'))
     .then((res) => res.json())
+    .then((key) => console.log(key))
     .then((key) => _storeRefreshJWT(key))
+    .then(refreshSubmit())
     .catch((err) => {
       console.log(err);
     });
 };
 
-const accessSubmit = async (data, url = `${domain}/access`) => {
-  console.log(data);
+const accessSubmit = async (url = `${domain}/access`) => {
   await fetch(url, {
-    method: 'POST',
+    method: 'GET',
     mode: 'cors',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      authorization: _retrieveAccessJWT,
     },
-    body: JSON.stringify(data),
   })
     .then(() => console.log('promise accepted'))
     .then((res) => console.log(res))
@@ -40,16 +48,16 @@ const accessSubmit = async (data, url = `${domain}/access`) => {
     });
 };
 
-const refreshSubmit = async (data, url = `${domain}/refresh`) => {
-  console.log(data);
+const refreshSubmit = async (url = `${domain}/refresh`) => {
   await fetch(url, {
-    method: 'POST',
+    method: 'GET',
     mode: 'cors',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      authorization: _retrieveRefreshJWT,
+      deviceId: deviceId,
     },
-    body: JSON.stringify(data),
   })
     .then(() => console.log('promise accepted'))
     .then((res) => console.log(res))

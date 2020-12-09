@@ -15,17 +15,9 @@ const saltAndHashNewPassword = (user) => {
 }
 
 const checkHashedPassword = (passwordEntry,user) => {
-  return new Promise((resolve, reject) => {
-    bcrypt.hash(passwordEntry,10, function(err, hash) { 
-      if (err) {throw (err); }
-  
-      bcrypt.compare(passwordEntry,user.password, function(err, res){
-        if(err) throw err;
-          return res;
-      })
-    })
-  }) 
+  return bcrypt.compareSync(passwordEntry, user.password);
 }
+
 
 
 exports.saltAndHashNewPassword = saltAndHashNewPassword;

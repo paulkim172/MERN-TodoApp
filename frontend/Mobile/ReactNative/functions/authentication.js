@@ -2,21 +2,22 @@ import {
   _storeAccessJWT,
   _retrieveAccessJWT,
   _retrieveRefreshJWT,
-} from '../asyncStorage';
-import {JWTSubmit} from './httpRequests';
+} from '../device/asyncStorage';
+import {accessSubmit, refreshSubmit} from './httpRequests';
 
 const isSignedIn = () => {
   let accessToken = _retrieveAccessJWT;
   let refreshToken = _retrieveRefreshJWT;
-  if (JWTSubmit(accessToken)) {
+
+  if (accessSubmit(accessToken)) {
     return true;
   } else {
-    if (JWTSubmit(refreshToken)) {
+    if (refreshSubmit(refreshToken)) {
       _storeAccessJWT();
-    } else {
-      return false;
+      return true;
     }
   }
+  return false;
 };
 
 export {isSignedIn};

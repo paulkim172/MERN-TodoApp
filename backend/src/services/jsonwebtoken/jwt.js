@@ -19,7 +19,7 @@ exports.createAccessJWT = (user) => {
 exports.createRefreshJWT = (user) => {
     let payload = {
         username: user.username,
-        password: user.password,
+        email: user.email,
         id: user._id,
     }
     console.log(payload);
@@ -28,6 +28,34 @@ exports.createRefreshJWT = (user) => {
         { 
             expiresIn: '28d'
         });
-    console.log(token);
+    console.log(token +' refresh token');
     return token;
 };
+
+exports.assignJWTToDevice = (user, deviceId, JWTRefreshToken) => {
+    if(!user.devices.some(obj => obj['deviceId'] === deviceId)){
+        if(user.devices.length >=3){
+            for(let i = 0; i <= user.devices.length - 3; i++){
+                user.devices.shift();
+            }
+        }
+        user.devices.push({
+            'deviceId': deviceId,
+            'activeToken': JWTRefreshToken
+        })
+    } else {
+        user.devices[user.devices.findIndex(obj => obj['deviceId']  === deviceId)] = {
+            'deviceId': deviceId,
+            'activeToken': JWTRefreshToken
+        }
+    }
+    return user.devices;
+}
+
+exports.checkRefreshJWT = (token, options) => {
+    jwt.verify(token, refreshSecret, options, function(err, jwt_payload) {
+        if(err) console.log(err);
+        console.log(jwt_payload);
+        return jwt_payload;
+    })
+}

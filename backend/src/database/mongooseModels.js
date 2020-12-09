@@ -22,7 +22,10 @@ const userSchema = new mongoose.Schema({
 
     lists: [{type: mongoose.Schema.Types.ObjectId, ref: 'todolist'}],
     comments: [{type: mongoose.Schema.Types.ObjectId, ref: 'itemcomments'}],
-    refreshTokens: [{type: mongoose.Schema.Types.String}]
+    devices: [{
+        deviceId: String, 
+        activeToken: String,
+    }]
     }
 )
 

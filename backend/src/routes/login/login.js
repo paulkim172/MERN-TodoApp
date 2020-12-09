@@ -1,7 +1,7 @@
 const passport = require('passport');
 const {addPassportLocal} = require('../../services/passport/passport-local');
-const {addPassportAccessJWT, addPassportRefreshJWT} = require('../../services/passport/passport-jwt')
-const {createAccessJWT,createRefreshJWT} = require('../../services/jsonwebtoken/jwt');
+const {addPassportAccessJWT} = require('../../services/passport/passport-jwt')
+const {createAccessJWT,createRefreshJWT,assignJWTToDevice, checkRefreshJWT} = require('../../services/jsonwebtoken/jwt');
 const {createNewUser} = require('../../database/mongooseCRUD');
 
 const { User } = require('../../database/mongooseModels');
@@ -12,36 +12,38 @@ exports.login = (app) => {
 
   addPassportLocal();
   addPassportAccessJWT();
-  addPassportRefreshJWT();
 
   //Access
 
-  app.post('/access',
+  app.get('/access',
   passport.authenticate('access-jwt', {failureRedirect: '/login', session: false}),
   function (req,res){
     User.findOne({refreshTokens:req.header.authorization}, (err,user) => {
       if(err) {
         console.log(err);
+        res.send('checkRefresh')
       } else{
-        res.json({accessToken: createAccessJWT(user)});
+        res.json({access: true});
       }
-
     return
   })})
 
   //Refresh
 
-  app.post('/refresh',
-  passport.authenticate('refresh-jwt', {failureRedirect: '/login', session: false}),
+  app.get('/refresh',
   function (req,res){
-    User.findOne({refreshTokens:req.header.authorization}, (err,user) => {
+    let token = req.get('authorization');
+    let deviceId = req.get('deviceId');
+    let payload = checkRefreshJWT(token);
+    User.findOne({_id: payload.id, email: payload.email}, (err,user) => {
       if(err) {
         console.log(err);
-      } else{
+        res.json({access: false});
+      } 
+      if (user.devices.some(obj => obj.deviceId === deviceId && obj.activeToken === token)){
         res.json({accessToken: createAccessJWT(user)});
       }
-
-    return
+      res.json({access: false});
   })})
 
   //Register
@@ -60,19 +62,24 @@ exports.login = (app) => {
   //Login
   
   app.post('/login',
-    passport.authenticate('local', {successRedirect: '/', failureRedirect: '/login', session: false}),
+    passport.authenticate('local', {session: false}),
     function(req,res){
       console.log('login info received! from Login.js');
       console.log(req.body);
-      User.findOne({username:req.body.username}, (err,user) => {
+      User.findOne({$or: [
+        {email: req.body['username/email']},
+        {username: req.body['username/email']},
+    ]}, 
+      function (err,user){
         if(err) {
           console.log(err);
-        } else{
-          res.json({refreshToken: createRefreshJWT(user)});
-          return;
+        } else {
+          let newRefreshJWT = createRefreshJWT(user);
+          user.devices = assignJWTToDevice(user, req.get('deviceId'),newRefreshJWT);
+          user.save();
+          res.json({refreshToken: newRefreshJWT});
         }
       })
-      
     })
   
   //Logout

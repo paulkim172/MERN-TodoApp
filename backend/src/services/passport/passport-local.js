@@ -6,24 +6,31 @@ const {createJsonWebToken} = require('../jsonwebtoken/jwt')
 
 
 exports.addPassportLocal = () => {
-    passport.use('local', new LocalStrategy(
-        function(username, password, done) {
-            console.log(username, password);
-            User.findOne({username:username}, function (err,user) {
+    passport.use('local', new LocalStrategy({
+        usernameField: 'username/email',
+    },
+        function(usernameOrEmail, password, done) {
+            console.log('passport local works')
+            console.log(usernameOrEmail, password);
+            User.findOne({$or: [
+                {email: usernameOrEmail},
+                {username: usernameOrEmail}
+            ]}, 
+            function (err,user) {
                 if(err) {
                     return done(err);
                 }
-                if(!user) {
+                if(!user){
                     console.log('user not found');
                     return done(null, false);
-                }
-                if (!checkHashedPassword(password,user)) {
-                    console.log('wrong password')
-                    return done(null, false);
-                }
+                } else {
+                    if(!checkHashedPassword(password,user)) {
 
-                console.log('correct sign in!');
-                return done(null, user);
+                        console.log('wrong password')
+                        return done(null, false);
+                    }
+                    return done(null, user);
+                }
             })
         }
     ))

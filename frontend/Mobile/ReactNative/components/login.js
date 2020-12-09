@@ -1,59 +1,63 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, Text, ImageBackground} from 'react-native';
-import {useForm, Controller} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 import {loginSubmit} from '../functions/httpRequests';
 import {Card, Input, Button} from 'react-native-elements';
-import styles from '../assets/css/styles';
+import {styles} from '../assets/css/styles-login';
 
-function Login() {
-  const {control, handleSubmit, errors} = useForm();
+function Login({navigation}) {
+  const {register, setValue, handleSubmit, errors} = useForm();
 
   const onSubmit = (data) => {
     console.log(data);
     loginSubmit(data);
   };
 
+  useEffect(() => {
+    register('username/email');
+    register('password');
+  }, [register]);
+
   return (
-    <View>
+    <View style={styles.view}>
       <ImageBackground
         source={require('../assets/images/freenaturestock-1743.jpg')}
         style={styles.backgroundImage}>
-        <Card>
-          <Text>Username</Text>
-          <Controller
-            control={control}
-            render={({onChange, onBlur, value}) => (
-              <Input
-                // style={styles.input}
-                onBlur={onBlur}
-                onChangeText={onChange(value)}
-                value={value}
-              />
-            )}
-            name="username"
-            rules={{required: true}}
-            defaultValue=""
+        <Card containerStyle={styles.cardContainer}>
+          <Text>Username/Email</Text>
+          <Input
+            placeholder="Username or Email"
+            style={styles.input}
+            onChangeText={(text) => {
+              setValue('username/email', text);
+            }}
           />
           {errors.username && (
             <Text>Username and/or Password is required.</Text>
           )}
           <Text>Password</Text>
-          <Controller
-            control={control}
-            render={({onChange, onBlur, value}) => (
-              <Input
-                // style={styles.input}
-                onBlur={onBlur}
-                onChangeText={onChange(value)}
-                value={value}
-              />
-            )}
-            name="password"
-            defaultValue=""
+          <Input
+            placeholder="Password"
+            secureTextEntry={true}
+            onChangeText={(text) => {
+              setValue('password', text);
+            }}
           />
+          <Text style={styles.text1}>Forgot Username and/or Password?</Text>
+
           <Button onPress={handleSubmit(onSubmit)} title="Submit">
             Submit
           </Button>
+          <Text style={styles.text2}>
+            Don't Have an Account?{' '}
+            <Text
+              style={styles.link}
+              onPress={() => {
+                navigation.navigate('Register');
+              }}>
+              Sign Up Now
+            </Text>
+          </Text>
         </Card>
       </ImageBackground>
     </View>
