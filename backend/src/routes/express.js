@@ -1,4 +1,5 @@
 const {login} = require('./login/login')
+const {user} = require('./user/user')
 
 /* ROUTES */
 
@@ -15,5 +16,9 @@ exports.expressRoutes = (app) => {
     //Login Routes
     
     login(app);
+
+    //User Routes;
+
+    user(app);
     
 }

@@ -3,9 +3,9 @@ const {User, List, Item, Comment} = require('./mongooseModels');
 const { saltAndHashNewPassword, checkHashedPassword } = require('../services/bcrypt/bcrypt.js')
 
 
+let currentUser;
 
 /* CRUD FUNCTIONALITY */
-
 
 //Create
 
@@ -98,9 +98,10 @@ const createNewComment = async (a,b) => {
 
 //Read
 
-const readCurrentUser = async (a) => {
-    await User.findById(a)
-    .exec(function (err, user) {
+const readCurrentUser = async (refreshToken) => {
+    currentUser = await User.findOne({refreshTokens:refreshToken});
+
+    return currentUser.exec(function (err, user) {
         if(err) return handleError(err);
         return user;
     }) 

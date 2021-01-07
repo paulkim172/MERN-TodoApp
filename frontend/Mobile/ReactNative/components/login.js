@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {View, Text, ImageBackground} from 'react-native';
 import {useForm} from 'react-hook-form';
-import {loginSubmit} from '../functions/httpRequests';
+import {loginSubmit} from '../api/httpRequests';
 import {Card, Input, Button} from 'react-native-elements';
 import {styles} from '../assets/css/styles-login';
 

@@ -23,7 +23,7 @@ exports.login = (app) => {
         console.log(err);
         res.send('checkRefresh')
       } else{
-        res.json({access: true});
+        res.json({user: user});
       }
     return
   })})
@@ -77,7 +77,7 @@ exports.login = (app) => {
           let newRefreshJWT = createRefreshJWT(user);
           user.devices = assignJWTToDevice(user, req.get('deviceId'),newRefreshJWT);
           user.save();
-          res.json({refreshToken: newRefreshJWT});
+          res.json({refreshToken: newRefreshJWT, currentUser: user});
         }
       })
     })

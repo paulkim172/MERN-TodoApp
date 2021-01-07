@@ -2,11 +2,11 @@ import React from 'react';
 import {View, Text} from 'react-native';
 import {useForm} from 'react-hook-form';
 import {Input, Button} from 'react-native-elements';
-import {registerSubmit} from '../functions/httpRequests';
+import {registerSubmit} from '../api/httpRequests';
 import {styles} from '../assets/css/styles-register';
 
 function Register({navigation}) {
-  const {setValue, handleSubmit, errors} = useForm();
+  const {setValue, handleSubmit} = useForm();
 
   const onSubmit = (data) => {
     console.log(data);

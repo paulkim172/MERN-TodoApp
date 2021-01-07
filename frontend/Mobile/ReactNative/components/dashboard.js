@@ -1,12 +1,37 @@
-import React from 'react';
-import {View, Text, ImageBackground} from 'react-native';
+import React, {Component} from 'react';
+import {View, Text} from 'react-native';
+import {connect} from 'react-redux';
 
-function Dashboard() {
-  return (
-    <View>
-      <Text>This is Dashboard</Text>
-    </View>
-  );
+const mapStateToProps = (state) => {
+  const {user} = state;
+  return {user: user};
+};
+
+// const mapDispatchToProps = () => {
+
+// };
+
+class Dashboard extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      user: props.user,
+    };
+  }
+
+  render() {
+    return (
+      <View>
+        <Text>This is Dashboard</Text>
+        <Text>User: {this.state.user.toString()} </Text>
+      </View>
+    );
+  }
 }
 
-export default Dashboard;
+const DashboardContainer = connect(
+  mapStateToProps,
+  // mapDispatchToProps,
+)(Dashboard);
+
+export default DashboardContainer;

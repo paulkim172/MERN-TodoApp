@@ -4,10 +4,10 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import Login from './components/login.js';
-import Dashboard from './components/dashboard.js';
+import DashboardContainer from './components/dashboard.js';
 import Register from './components/register.js';
 
-import {isSignedIn} from './functions/authentication';
+import {isSignedIn} from './api/authentication';
 
 const Stack = createStackNavigator();
 
@@ -26,7 +26,11 @@ class App extends Component {
           }}>
           {isSignedIn ? (
             <>
-              <Stack.Screen name="Dashboard" component={Dashboard} />
+              <Stack.Screen
+                name="Dashboard"
+                component={DashboardContainer}
+                options={{title: () => <DashboardContainer />}}
+              />
             </>
           ) : (
             <>

@@ -2,7 +2,6 @@ const passport = require('passport')
     , LocalStrategy = require('passport-local').Strategy;
 const {checkHashedPassword} = require('../bcrypt/bcrypt');
 const {User} = require('../../database/mongooseCRUD');
-const {createJsonWebToken} = require('../jsonwebtoken/jwt')
 
 
 exports.addPassportLocal = () => {
