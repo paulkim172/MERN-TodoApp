@@ -1,11 +1,5 @@
-import {
-  _storeRefreshJWT,
-  _retrieveAccessJWT,
-  _retrieveRefreshJWT,
-} from '../device/asyncStorage';
+import {_storeRefreshJWT, _retrieveAccessJWT} from '../device/asyncStorage';
 import {getUniqueId} from '../device/deviceInfo';
-import {setCurrentUser} from '../reducers/actions/userActions';
-import {dispatch} from 'react-redux';
 
 const domain = 'http://192.168.0.10:3000';
 const deviceId = getUniqueId();
@@ -25,41 +19,54 @@ const loginSubmit = async (input, url = `${domain}/login`) => {
     body: JSON.stringify(input),
   });
   let data = await response.json();
-  console.log(data);
+  console.log('login response data: ' + data.refreshToken);
   await _storeRefreshJWT(data.refreshToken);
-  await dispatch(setCurrentUser(data.currentUser));
-  refreshSubmit;
+  return data.currentUser;
 };
 
 const accessSubmit = async (url = `${domain}/access`) => {
-  let response = await fetch(url, {
-    method: 'GET',
-    mode: 'cors',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      authorization: _retrieveAccessJWT,
-    },
-  });
-  console.log('promise accepted');
-  console.log(response);
-  let data = await response.json();
-  return data.user;
+  try {
+    let response = await fetch(url, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        authorization: _retrieveAccessJWT(),
+      },
+    });
+    let data = await response.json();
+    console.log('access response data: ' + data.accesstoken);
+    return data.user;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 };
 
-const refreshSubmit = async (url = `${domain}/refresh`) => {
-  let response = await fetch(url, {
-    method: 'GET',
-    mode: 'cors',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      authorization: _retrieveRefreshJWT,
-      deviceId: deviceId,
-    },
-  });
-  let data = await response.json();
-  return data;
+const refreshSubmit = async (refreshJWT, url = `${domain}/refresh`) => {
+  try {
+    console.log('refreshSubmit called');
+    console.log('refresh token: ' + refreshJWT);
+    console.log('deviceId: ' + deviceId);
+
+    let response = await fetch(url, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        authorization: refreshJWT,
+        deviceId: deviceId,
+      },
+    });
+    let data = await response.json();
+    console.log('refresh submit data: ' + data);
+    return data;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 };
 
 const fetchUserInfo = async (userPayload, thunkAPI, url = `${domain}/user`) => {

@@ -10,10 +10,27 @@ import Register from './components/register.js';
 import {isSignedIn} from './api/authentication';
 
 const Stack = createStackNavigator();
-
 class App extends Component {
   constructor(props) {
     super(props);
+    this.state = {};
+  }
+  async componentDidMount() {
+    try {
+      this.state.signedIn = await isSignedIn();
+      console.log(this.state);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async componentDidUpdate() {
+    try {
+      this.state.signedIn = await isSignedIn();
+      console.log(this.state);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   render() {
@@ -24,7 +41,7 @@ class App extends Component {
           screenOptions={{
             headerShown: false,
           }}>
-          {isSignedIn ? (
+          {this.state.signedIn ? (
             <>
               <Stack.Screen
                 name="Dashboard"

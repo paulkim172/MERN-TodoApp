@@ -1,7 +1,7 @@
 const passport = require('passport');
 const {addPassportLocal} = require('../../services/passport/passport-local');
 const {addPassportAccessJWT} = require('../../services/passport/passport-jwt')
-const {createAccessJWT,createRefreshJWT,assignJWTToDevice, checkRefreshJWT} = require('../../services/jsonwebtoken/jwt');
+const {createAccessJWT,createRefreshJWT,assignJWTToDevice, checkRefreshJWT, checkAccessJWT} = require('../../services/jsonwebtoken/jwt');
 const {createNewUser} = require('../../database/mongooseCRUD');
 
 const { User } = require('../../database/mongooseModels');
@@ -16,14 +16,16 @@ exports.login = (app) => {
   //Access
 
   app.get('/access',
-  passport.authenticate('access-jwt', {failureRedirect: '/login', session: false}),
+  passport.authenticate('passport-jwt', {failureRedirect: '/login', session: false}),
   function (req,res){
-    User.findOne({refreshTokens:req.header.authorization}, (err,user) => {
+    console.log('access called!')
+    let payload = checkAccessJWT(req.token);
+    User.findOne({username: payload.username, _id: payload.id}, (err,user) => {
       if(err) {
         console.log(err);
-        res.send('checkRefresh')
+        res.json({"user": null});
       } else{
-        res.json({user: user});
+        res.json({"user": user});
       }
     return
   })})
@@ -31,19 +33,23 @@ exports.login = (app) => {
   //Refresh
 
   app.get('/refresh',
-  function (req,res){
-    let token = req.get('authorization');
-    let deviceId = req.get('deviceId');
-    let payload = checkRefreshJWT(token);
+  async function (req,res){
+    console.log('refresh called!')
+    console.log(req.headers);
+    let token = await req.get('authorization');
+    console.log('token: ' + token);
+    let deviceId = await req.get('deviceId');
+    let payload = await checkRefreshJWT(token);
+    console.log('payload: ' + payload);
     User.findOne({_id: payload.id, email: payload.email}, (err,user) => {
       if(err) {
         console.log(err);
-        res.json({access: false});
+        res.json({'accessToken': null});
       } 
       if (user.devices.some(obj => obj.deviceId === deviceId && obj.activeToken === token)){
-        res.json({accessToken: createAccessJWT(user)});
+        res.json({"accessToken": createAccessJWT(user)});
       }
-      res.json({access: false});
+      res.json({'accessToken': null});
   })})
 
   //Register
@@ -51,7 +57,7 @@ exports.login = (app) => {
   app.post('/register', 
   async (req,res) => {
       if(!(await User.exists({username: req.body.username}))){
-        createNewUser(req,res);
+        await createNewUser(req,res);
         res.send('created User');
       } else {
         res.send('username taken!');
@@ -63,10 +69,10 @@ exports.login = (app) => {
   
   app.post('/login',
     passport.authenticate('local', {session: false}),
-    function(req,res){
+    async function(req,res){
       console.log('login info received! from Login.js');
       console.log(req.body);
-      User.findOne({$or: [
+      await User.findOne({$or: [
         {email: req.body['username/email']},
         {username: req.body['username/email']},
     ]}, 
@@ -77,7 +83,7 @@ exports.login = (app) => {
           let newRefreshJWT = createRefreshJWT(user);
           user.devices = assignJWTToDevice(user, req.get('deviceId'),newRefreshJWT);
           user.save();
-          res.json({refreshToken: newRefreshJWT, currentUser: user});
+          res.json({"refreshToken": newRefreshJWT, "currentUser": user});
         }
       })
     })

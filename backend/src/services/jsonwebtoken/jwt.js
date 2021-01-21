@@ -52,9 +52,23 @@ exports.assignJWTToDevice = (user, deviceId, JWTRefreshToken) => {
     return user.devices;
 }
 
-exports.checkRefreshJWT = (token, options) => {
-    jwt.verify(token, refreshSecret, options, function(err, jwt_payload) {
-        if(err) console.log(err);
+exports.checkRefreshJWT = async (token) => {
+    console.log('checkRefreshJWT Called!');
+    return jwt.verify(token, refreshSecret, function(err, jwt_payload) {
+        if(err) {
+            console.log(err);
+            return null;
+        } else {
+            console.log('jwt_payload' + jwt_payload);
+            return jwt_payload;
+        }
+        
+    })
+}
+
+exports.checkAccessJWT = (token, options) => {
+    jwt.verify(token, secret, options, function(err, jwt_payload){
+        if (err) console.log(err);
         console.log(jwt_payload);
         return jwt_payload;
     })

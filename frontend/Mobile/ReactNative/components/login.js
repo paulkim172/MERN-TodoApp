@@ -1,17 +1,22 @@
 import React, {useEffect} from 'react';
 import {View, Text, ImageBackground} from 'react-native';
 import {useForm} from 'react-hook-form';
-import {loginSubmit} from '../api/httpRequests';
 import {Card, Input, Button} from 'react-native-elements';
 import {styles} from '../assets/css/styles-login';
+import {connect} from 'react-redux';
+import {setCurrentUser} from '../reducers/actions/userActions';
 
-function Login({navigation}) {
-  const {register, setValue, handleSubmit, errors} = useForm();
-
-  const onSubmit = (data) => {
-    console.log(data);
-    loginSubmit(data);
+function mapDispatchToProps(dispatch) {
+  return {
+    submitLogin: (data) => {
+      console.log('loginSubmit');
+      dispatch(setCurrentUser(data));
+    },
   };
+}
+
+function Login({navigation, submitLogin}) {
+  const {register, setValue, handleSubmit, errors} = useForm();
 
   useEffect(() => {
     register('username/email');
@@ -45,7 +50,9 @@ function Login({navigation}) {
           />
           <Text style={styles.text1}>Forgot Username and/or Password?</Text>
 
-          <Button onPress={handleSubmit(onSubmit)} title="Submit">
+          <Button
+            onPress={handleSubmit((data) => submitLogin(data))}
+            title="Submit">
             Submit
           </Button>
           <Text style={styles.text2}>
@@ -64,4 +71,4 @@ function Login({navigation}) {
   );
 }
 
-export default Login;
+export default connect(null, mapDispatchToProps)(Login);

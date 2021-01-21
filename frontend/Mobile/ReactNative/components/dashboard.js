@@ -23,7 +23,7 @@ class Dashboard extends Component {
     return (
       <View>
         <Text>This is Dashboard</Text>
-        <Text>User: {this.state.user.toString()} </Text>
+        <Text>User: {JSON.stringify(this.state.user)} </Text>
       </View>
     );
   }
